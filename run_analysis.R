@@ -22,9 +22,17 @@ subjtestd <- data.table(read.delim("subjtest.txt", header = FALSE, sep = ""))
 subjtraind <- data.table(read.delim("subjtrain.txt", header = FALSE, sep = ""))
 featuresd <- data.table(read.delim("features.txt", header = FALSE, sep = ""))
 
-##  rename columns in ytest,ytrain,subjtest,subjtrain to descriptive names
-ytestd <- rename(ytestd, activity = V1)
-ytraind <- rename(ytraind, activity = V1)
+## merge the activity labels with the activities in ytestd and ytraind 
+ytestd <- merge(ytestd,activityd, by = "V1", sort = FALSE)
+ytraind <- merge(ytraind,activityd, by = "V1", sort = FALSE)
+
+#subset ytestd and ytraind back to one column
+ytestd <- select(ytestd,V2)
+ytraind <- select(ytraind,V2)
+
+##  rename columns in ytest,ytrain,subjtest,subjtrain to descriptive names (requirement 3)
+ytestd <- rename(ytestd, activity = V2)
+ytraind <- rename(ytraind, activity = V2)
 subjtestd <- rename(subjtestd, subject = V1)
 subjtraind <- rename(subjtraind, subject = V1)
 
@@ -34,15 +42,6 @@ addtrainc <- cbind(xtraind,ytraind,subjtraind)
 
 ## Merge the traning and test sets to create one data set (requirement 1)
 testtraind <- rbind(addtestc,addtrainc)
-
-## Use descriptive activity names to name the activities in the dataset (requirement 3)
-## assign descriptions to activities
-testtraind$activity[testtraind$activity == "1"] <- "WALKING"
-testtraind$activity[testtraind$activity == "2"] <- "WALKING_UPSTAIRS"
-testtraind$activity[testtraind$activity == "3"] <- "WALKING_DOWNSTAIRS"
-testtraind$activity[testtraind$activity == "4"] <- "SITTING"
-testtraind$activity[testtraind$activity == "5"] <- "STANDING"
-testtraind$activity[testtraind$activity == "6"] <- "LAYING" 
 
 ##  select features required for measurements (mean and standard deviation)
 selectmeasures <- featuresd[grep("mean|std", featuresd$V2),]
