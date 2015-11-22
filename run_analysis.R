@@ -32,10 +32,10 @@ subjtraind <- rename(subjtraind, subject = V1)
 addtestc <- cbind(xtestd,ytestd,subjtestd)
 addtrainc <- cbind(xtraind,ytraind,subjtraind)
 
-## Merge the traning and test sets to create one data set (step 1)
+## Merge the traning and test sets to create one data set (requirement 1)
 testtraind <- rbind(addtestc,addtrainc)
 
-## Use descriptive activity names to name the activities in the dataset (step 3)
+## Use descriptive activity names to name the activities in the dataset (requirement 3)
 ## assign descriptions to activities
 testtraind$activity[testtraind$activity == "1"] <- "WALKING"
 testtraind$activity[testtraind$activity == "2"] <- "WALKING_UPSTAIRS"
@@ -47,14 +47,14 @@ testtraind$activity[testtraind$activity == "6"] <- "LAYING"
 ##  select features required for measurements (mean and standard deviation)
 selectmeasures <- featuresd[grep("mean|std", featuresd$V2),]
 
-##  appropriately label the column names for selected measures in testtraind (step 4)
+##  appropriately label the column names for selected measures in testtraind (requirement 4)
 setnames(testtraind,selectmeasures$V1,as.character(selectmeasures$V2))
 
-## create a dataset containing only the selected measures (step 2)
+## create a dataset containing only the selected measures (requirement 2)
 
 extract_testtraind <- select(testtraind,contains("mean"),contains("std"),contains("activity"),contains("subject"))
                         
-##  create a tidy dataset with the average of each variable for each activity and each subject (step 5)
+##  create a tidy dataset with the average of each variable for each activity and each subject (requirement 5)
 by_var <- extract_testtraind %>% group_by(activity,subject)  ## define group by
 avg_testtraind <- by_var %>% summarize_each(funs(mean))      ## calculate average
 avg_testtraind <- setorder(avg_testtraind,"subject","activity")  ## sort results
